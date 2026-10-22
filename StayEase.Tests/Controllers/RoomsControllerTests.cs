@@ -74,7 +74,8 @@ public class RoomsControllerTests
         var dto = new CreateRoomDto(
             "101",
             "Standard",
-            2
+            2,
+            150m
         );
 
         // Act
@@ -103,7 +104,8 @@ public class RoomsControllerTests
         var dto = new CreateRoomDto(
             "301",
             "Luxo",
-            3
+            3,
+            150m
         );
 
         // Act
@@ -127,7 +129,8 @@ public class RoomsControllerTests
         var dto = new CreateRoomDto(
             "301",
             "Luxo",
-            3
+            3,
+            150m
         );
 
         // Act
@@ -151,7 +154,8 @@ public class RoomsControllerTests
         var dto = new CreateRoomDto(
             "402",
             "Deluxe",
-            4
+            4,
+            150m
         );
 
         // Act
@@ -189,7 +193,8 @@ public class RoomsControllerTests
             "101",
             "Deluxe",
             4,
-            RoomStatus.Occupied
+            RoomStatus.Occupied,
+            150m
         );
 
         // Act
@@ -230,7 +235,8 @@ public class RoomsControllerTests
             "505",
             "Suite",
             5,
-            RoomStatus.PendingCleaning
+            RoomStatus.PendingCleaning,
+            150m
         );
 
         // Act
@@ -258,7 +264,8 @@ public class RoomsControllerTests
             "101",
             "Deluxe",
             4,
-            RoomStatus.Occupied
+            RoomStatus.Occupied,
+            150m
         );
 
         // Act

@@ -66,7 +66,7 @@ export function mapUserRoleToApi(role) {
     return 0;
 }
 
-export function normalizeRoomFromApi(room, dailyRate = null) {
+export function normalizeRoomFromApi(room) {
     return {
         id: room?.roomId ?? room?.id ?? "",
         roomId: room?.roomId ?? room?.id ?? "",
@@ -74,7 +74,7 @@ export function normalizeRoomFromApi(room, dailyRate = null) {
         tipo: room?.type ?? "",
         capacidade: Number(room?.capacity ?? 0),
         status: normalizeRoomStatus(room?.status),
-        diaria: dailyRate ?? null,
+        diaria: Number(room?.dailyRate ?? 0),
     };
 }
 
@@ -83,14 +83,13 @@ export function createRoomPayloadFromUi(room) {
         number: String(room.numero ?? "").trim(),
         type: String(room.tipo ?? "").trim(),
         capacity: Number(room.capacidade ?? 0),
+        dailyRate: Number(room.diaria ?? 0),
     };
 }
 
 export function updateRoomPayloadFromUi(room) {
     return {
-        number: String(room.numero ?? "").trim(),
-        type: String(room.tipo ?? "").trim(),
-        capacity: Number(room.capacidade ?? 0),
+        ...createRoomPayloadFromUi(room),
         status: mapRoomStatusToApi(room.status),
     };
 }

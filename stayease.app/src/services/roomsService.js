@@ -4,30 +4,31 @@ import {
     normalizeRoomFromApi,
     updateRoomPayloadFromUi,
 } from "./apiMappers";
-import { getRoomDailyRate } from "./roomDailyRatesStorage";
 
 export async function fetchRooms() {
     const response = await api.get("/rooms");
     const rooms = Array.isArray(response.data) ? response.data : [];
 
-    return rooms.map((room) =>
-        normalizeRoomFromApi(room, getRoomDailyRate(room.roomId))
-    );
+    return rooms.map((room) => normalizeRoomFromApi(room));
 }
 
 export async function createRoom(room) {
     const payload = createRoomPayloadFromUi(room);
     const response = await api.post("/rooms", payload);
-    return normalizeRoomFromApi(response.data, getRoomDailyRate(response.data.roomId));
+    return normalizeRoomFromApi(response.data);
 }
 
 export async function updateRoom(roomId, room) {
     const payload = updateRoomPayloadFromUi(room);
-    const response = await api.put(`/rooms/${roomId}`, payload);
-    return normalizeRoomFromApi(
-        response.data ?? { ...room, roomId },
-        getRoomDailyRate(roomId)
-    );
+    await api.put(`/rooms/${roomId}`, payload);
+
+    // The API answers 204 No Content, so return the UI room with the saved values.
+    return {
+        ...room,
+        id: roomId,
+        roomId,
+        diaria: payload.dailyRate,
+    };
 }
 
 export async function deleteRoom(roomId) {

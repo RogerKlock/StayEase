@@ -44,11 +44,6 @@ import {
   finishCleaning,
   updateRoom,
 } from "../../services/roomsService";
-import {
-  deleteRoomDailyRate,
-  getRoomDailyRate,
-  setRoomDailyRate,
-} from "../../services/roomDailyRatesStorage";
 
 const quartoVazio = {
   id: "",
@@ -114,7 +109,7 @@ function Quartos() {
       numero: quarto.numero,
       tipo: quarto.tipo,
       capacidade: quarto.capacidade,
-      diaria: getRoomDailyRate(roomId) ?? quarto.diaria ?? 0,
+      diaria: quarto.diaria ?? 0,
       status: quarto.status,
     });
     setAberto(true);
@@ -135,29 +130,24 @@ function Quartos() {
       numero: form.numero.trim(),
       tipo: form.tipo.trim(),
       capacidade: Number(form.capacidade),
+      diaria: Number(form.diaria || 0),
       status: form.status,
     };
 
     try {
       if (form.id) {
         const atualizado = await updateRoom(form.id, payload);
-        const roomId = atualizado.roomId ?? atualizado.id;
-        const diaria = Number(form.diaria || 0);
-        setRoomDailyRate(roomId, diaria);
         setQuartos((atual) =>
           atual.map((quarto) =>
-            (quarto.roomId ?? quarto.id) === roomId
-              ? { ...atualizado, diaria }
+            (quarto.roomId ?? quarto.id) === atualizado.roomId
+              ? atualizado
               : quarto
           )
         );
         toast.success(`Quarto ${form.numero} atualizado.`);
       } else {
         const criado = await createRoom(payload);
-        const roomId = criado.roomId ?? criado.id;
-        const diaria = Number(form.diaria || 0);
-        setRoomDailyRate(roomId, diaria);
-        setQuartos((atual) => [...atual, { ...criado, diaria }]);
+        setQuartos((atual) => [...atual, criado]);
         toast.success(`Quarto ${form.numero} cadastrado.`);
       }
 
@@ -176,7 +166,6 @@ function Quartos() {
 
     try {
       await deleteRoom(roomId);
-      deleteRoomDailyRate(roomId);
       setQuartos((atual) =>
         atual.filter((item) => (item.roomId ?? item.id) !== roomId)
       );
@@ -312,7 +301,7 @@ function Quartos() {
           <TableBody>
             {quartos.map((quarto) => {
               const roomId = quarto.roomId ?? quarto.id;
-              const diaria = getRoomDailyRate(roomId) ?? quarto.diaria ?? 0;
+              const diaria = quarto.diaria ?? 0;
 
               return (
                 <TableRow key={roomId}>

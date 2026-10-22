@@ -99,6 +99,10 @@ namespace StayEase.Api.Migrations
                     b.Property<int>("Capacity")
                         .HasColumnType("integer");
 
+                    b.Property<decimal>("DailyRate")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
                     b.Property<string>("Number")
                         .IsRequired()
                         .HasMaxLength(50)

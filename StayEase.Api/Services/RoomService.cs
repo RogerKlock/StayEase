@@ -27,6 +27,7 @@ public class RoomService : IRoomService
             Number = dto.Number,
             Type = dto.Type,
             Capacity = dto.Capacity,
+            DailyRate = dto.DailyRate,
             Status = RoomStatus.Available
         };
         await _db.Rooms.AddAsync(room);
@@ -45,6 +46,7 @@ public class RoomService : IRoomService
         room.Type = dto.Type;
         room.Capacity = dto.Capacity;
         room.Status = dto.Status;
+        room.DailyRate = dto.DailyRate;
         await _db.SaveChangesAsync();
         return room;
     }

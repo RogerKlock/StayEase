@@ -12,7 +12,6 @@ import {
   fetchReservations,
 } from "../../services/reservationsService";
 import { fetchRooms, finishCleaning } from "../../services/roomsService";
-import { getRoomDailyRate } from "../../services/roomDailyRatesStorage";
 
 function DashboardADM() {
   const [quartos, setQuartos] = useState([]);
@@ -36,12 +35,8 @@ function DashboardADM() {
   const carregarDados = async () => {
     try {
       const [rooms, bookings] = await Promise.all([fetchRooms(), fetchReservations()]);
-      const roomsWithRates = rooms.map((room) => ({
-        ...room,
-        diaria: getRoomDailyRate(room.roomId ?? room.id),
-      }));
 
-      setQuartos(roomsWithRates);
+      setQuartos(rooms);
       setReservas(bookings);
     } catch {
       setQuartos([]);
