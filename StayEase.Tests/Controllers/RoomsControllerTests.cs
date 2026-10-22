@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using StayEase.Api.Controllers;
 using StayEase.Api.Dtos;
 using StayEase.Api.Models;
+using StayEase.Api.Services;
 
 namespace StayEase.Tests.Controllers;
 
@@ -32,7 +33,7 @@ public class RoomsControllerTests
 
         await db.SaveChangesAsync();
 
-        var controller = new RoomsController(db);
+        var controller = new RoomsController(new RoomService(db));
 
         // Act
         var result = await controller.GetRooms();
@@ -50,7 +51,7 @@ public class RoomsControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new RoomsController(db);
+        var controller = new RoomsController(new RoomService(db));
 
         // Act
         var result = await controller.GetRooms();
@@ -68,7 +69,7 @@ public class RoomsControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new RoomsController(db);
+        var controller = new RoomsController(new RoomService(db));
 
         var dto = new CreateRoomDto(
             "101",
@@ -97,7 +98,7 @@ public class RoomsControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new RoomsController(db);
+        var controller = new RoomsController(new RoomService(db));
 
         var dto = new CreateRoomDto(
             "301",
@@ -121,7 +122,7 @@ public class RoomsControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new RoomsController(db);
+        var controller = new RoomsController(new RoomService(db));
 
         var dto = new CreateRoomDto(
             "301",
@@ -145,7 +146,7 @@ public class RoomsControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new RoomsController(db);
+        var controller = new RoomsController(new RoomService(db));
 
         var dto = new CreateRoomDto(
             "402",
@@ -182,7 +183,7 @@ public class RoomsControllerTests
         db.Rooms.Add(room);
         await db.SaveChangesAsync();
 
-        var controller = new RoomsController(db);
+        var controller = new RoomsController(new RoomService(db));
 
         var dto = new UpdateRoomDto(
             "101",
@@ -223,7 +224,7 @@ public class RoomsControllerTests
         db.Rooms.Add(room);
         await db.SaveChangesAsync();
 
-        var controller = new RoomsController(db);
+        var controller = new RoomsController(new RoomService(db));
 
         var dto = new UpdateRoomDto(
             "505",
@@ -251,7 +252,7 @@ public class RoomsControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new RoomsController(db);
+        var controller = new RoomsController(new RoomService(db));
 
         var dto = new UpdateRoomDto(
             "101",
@@ -284,7 +285,7 @@ public class RoomsControllerTests
         db.Rooms.Add(room);
         await db.SaveChangesAsync();
 
-        var controller = new RoomsController(db);
+        var controller = new RoomsController(new RoomService(db));
 
         // Act
         var result = await controller.DeleteRoom(room.RoomId);
@@ -300,7 +301,7 @@ public class RoomsControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new RoomsController(db);
+        var controller = new RoomsController(new RoomService(db));
 
         // Act
         var result = await controller.DeleteRoom(999);
@@ -334,7 +335,7 @@ public class RoomsControllerTests
         db.Rooms.AddRange(room1, room2);
         await db.SaveChangesAsync();
 
-        var controller = new RoomsController(db);
+        var controller = new RoomsController(new RoomService(db));
 
         // Act
         await controller.DeleteRoom(room1.RoomId);

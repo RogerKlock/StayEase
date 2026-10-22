@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using StayEase.Api.Data;
 using StayEase.Api.Dtos;
-using StayEase.Api.Models;
+using StayEase.Api.Services;
 
 namespace StayEase.Api.Controllers;
 
@@ -10,59 +8,36 @@ namespace StayEase.Api.Controllers;
 [ApiController]
 public class UsersController : ControllerBase
 {
-    private readonly AppDbContext _db;
+    private readonly IUserService _userService;
 
-    public UsersController(AppDbContext db)
+    public UsersController(IUserService userService)
     {
-        _db = db;
+        _userService = userService;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetUsers()
     {
-        var users = await _db.Users.AsNoTracking().ToListAsync();
-        return Ok(users);
+        return Ok(await _userService.GetAllAsync());
     }
 
     [HttpPost]
     public async Task<IActionResult> AddUser(CreateUserDto dto)
     {
-        var user = new User
-        {
-            Email = dto.Email,
-            Role = dto.Role
-        };
-        await _db.Users.AddAsync(user);
-        await _db.SaveChangesAsync();
-        return Ok(user);
+        return Ok(await _userService.CreateAsync(dto));
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(int id, UpdateUserDto dto)
     {
-        var user = await _db.Users.FindAsync(id);
-        if (user == null)
-        {
-            return NotFound(new { message = "User not found" });
-        }
-
-        user.Role = dto.Role;
-        _db.Users.Update(user);
-        await _db.SaveChangesAsync();
-        return Ok(user);
+        var user = await _userService.UpdateAsync(id, dto);
+        return user == null ? NotFound(new { message = "User not found" }) : Ok(user);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(int id)
     {
-        var user = await _db.Users.FindAsync(id);
-        if (user == null)
-        {
-            return NotFound(new { message = "User not found" });
-        }
-
-        _db.Users.Remove(user);
-        await _db.SaveChangesAsync();
-        return Ok(user);
+        var user = await _userService.DeleteAsync(id);
+        return user == null ? NotFound(new { message = "User not found" }) : Ok(user);
     }
 }

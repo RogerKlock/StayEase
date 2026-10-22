@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using StayEase.Api.Controllers;
 using StayEase.Api.Dtos;
 using StayEase.Api.Models;
+using StayEase.Api.Services;
 
 namespace StayEase.Tests.Controllers;
 
@@ -51,7 +52,7 @@ public class ReservationsControllerTests
 
         await db.SaveChangesAsync();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         // Act
         var result = await controller.GetActiveReservations();
@@ -76,7 +77,7 @@ public class ReservationsControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         // Act
         var result = await controller.GetActiveReservations();
@@ -116,7 +117,7 @@ public class ReservationsControllerTests
 
         await db.SaveChangesAsync();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         // Act
         var result = await controller.GetAllReservations();
@@ -136,7 +137,7 @@ public class ReservationsControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         var checkIn = DateTime.UtcNow;
         var checkOut = checkIn.AddDays(2);
@@ -169,7 +170,7 @@ public class ReservationsControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         var dto = new CreateReservationDto(
             1,
@@ -205,7 +206,7 @@ public class ReservationsControllerTests
         db.Reservations.Add(reservation);
         await db.SaveChangesAsync();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         // Act
         var result =
@@ -229,7 +230,7 @@ public class ReservationsControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         // Act
         var result = await controller.GetReservation(999);
@@ -279,7 +280,7 @@ public class ReservationsControllerTests
 
         await db.SaveChangesAsync();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         // Act
         var result =
@@ -305,7 +306,7 @@ public class ReservationsControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         // Act
         var result =
@@ -358,7 +359,7 @@ public class ReservationsControllerTests
 
         await db.SaveChangesAsync();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         // Act
         var result =
@@ -384,7 +385,7 @@ public class ReservationsControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         // Act
         var result =
@@ -416,7 +417,7 @@ public class ReservationsControllerTests
         db.Reservations.Add(reservation);
         await db.SaveChangesAsync();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         // Act
         var result =
@@ -438,7 +439,7 @@ public class ReservationsControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         // Act
         var result = await controller.CheckIn(999);
@@ -467,7 +468,7 @@ public class ReservationsControllerTests
         db.Reservations.Add(reservation);
         await db.SaveChangesAsync();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         // Act
         var result =
@@ -489,7 +490,7 @@ public class ReservationsControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         // Act
         var result = await controller.CheckOut(999);
@@ -518,7 +519,7 @@ public class ReservationsControllerTests
         db.Reservations.Add(reservation);
         await db.SaveChangesAsync();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         // Act
         var result =
@@ -540,7 +541,7 @@ public class ReservationsControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         // Act
         var result = await controller.Cancel(999);
@@ -569,7 +570,7 @@ public class ReservationsControllerTests
         db.Reservations.Add(reservation);
         await db.SaveChangesAsync();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         // Act
         var checkInResult =
@@ -607,7 +608,7 @@ public class ReservationsControllerTests
         db.Reservations.Add(reservation);
         await db.SaveChangesAsync();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         // Act
         await controller.Cancel(reservation.ReservationId);
@@ -641,7 +642,7 @@ public class ReservationsControllerTests
         db.Reservations.Add(reservation);
         await db.SaveChangesAsync();
 
-        var controller = new ReservationsController(db);
+        var controller = new ReservationsController(new ReservationService(db));
 
         // Act
         await controller.CheckOut(reservation.ReservationId);
