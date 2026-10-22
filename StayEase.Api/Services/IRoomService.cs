@@ -13,5 +13,6 @@ public interface IRoomService
     Task<Room?> UpdateAsync(int id, UpdateRoomDto dto);
 
     /// <returns>False when the room does not exist.</returns>
+    /// <exception cref="Exceptions.ConflictException">The room has reservations.</exception>
     Task<bool> DeleteAsync(int id);
 }

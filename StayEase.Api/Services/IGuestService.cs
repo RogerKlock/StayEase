@@ -13,5 +13,6 @@ public interface IGuestService
     Task<Guest?> UpdateAsync(int id, UpdateGuestDto dto);
 
     /// <returns>False when the guest does not exist.</returns>
+    /// <exception cref="Exceptions.ConflictException">The guest has reservations.</exception>
     Task<bool> DeleteAsync(int id);
 }

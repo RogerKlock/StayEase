@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using StayEase.Api.Data;
 using StayEase.Api.Dtos;
+using StayEase.Api.Exceptions;
 using StayEase.Api.Models;
 
 namespace StayEase.Api.Services;
@@ -54,6 +55,10 @@ public class RoomService : IRoomService
         if (room == null)
         {
             return false;
+        }
+        if (await _db.Reservations.AnyAsync(r => r.RoomId == id))
+        {
+            throw new ConflictException("O quarto possui histórico de reservas e não pode ser excluído.");
         }
         _db.Rooms.Remove(room);
         await _db.SaveChangesAsync();
