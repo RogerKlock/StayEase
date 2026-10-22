@@ -34,6 +34,12 @@ public class RoomsController : ControllerBase
         return room == null ? NotFound() : NoContent();
     }
 
+    [HttpPatch("{id}/finish-cleaning")]
+    public async Task<IActionResult> FinishCleaning(int id)
+    {
+        return await _roomService.FinishCleaningAsync(id) ? NoContent() : NotFound();
+    }
+
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteRoom(int id)
     {

@@ -49,6 +49,22 @@ public class RoomService : IRoomService
         return room;
     }
 
+    public async Task<bool> FinishCleaningAsync(int id)
+    {
+        var room = await _db.Rooms.FindAsync(id);
+        if (room == null)
+        {
+            return false;
+        }
+        if (room.Status != RoomStatus.PendingCleaning)
+        {
+            throw new ConflictException($"O quarto {room.Number} não está aguardando limpeza.");
+        }
+        room.Status = RoomStatus.Available;
+        await _db.SaveChangesAsync();
+        return true;
+    }
+
     public async Task<bool> DeleteAsync(int id)
     {
         var room = await _db.Rooms.FindAsync(id);

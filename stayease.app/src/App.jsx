@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "sonner";
 
 import Login from "./pages/login";
 
@@ -29,6 +30,7 @@ function App() {
   return (
     <UserProvider> {/* Utilizado para autenticação mockada enquanto não tem banco */}
     <BrowserRouter>
+      <Toaster richColors position="top-right" />
       <Routes>
 
         {/* Sem layout */}

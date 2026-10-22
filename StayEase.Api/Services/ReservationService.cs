@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using StayEase.Api.Data;
 using StayEase.Api.Dtos;
+using StayEase.Api.Exceptions;
 using StayEase.Api.Models;
 
 namespace StayEase.Api.Services;
@@ -63,29 +64,59 @@ public class ReservationService : IReservationService
         return reservation;
     }
 
+    // Check-in and check-out update the reservation and the room status in the same
+    // SaveChanges call, so both changes are committed in a single transaction.
+
     public async Task<bool> CheckInAsync(int id)
     {
-        var reservation = await _db.Reservations.FindAsync(id);
+        var reservation = await FindWithRoomAsync(id);
         if (reservation == null)
         {
             return false;
         }
+        var room = reservation.Room!;
+
+        if (reservation.Status == ReservationStatus.Confirmed && room.Status != RoomStatus.Available)
+        {
+            throw new ConflictException(
+                $"O quarto {room.Number} não está livre para check-in (status atual: {RoomStatusLabel(room.Status)}).");
+        }
+
         reservation.CheckIn();
+        room.Status = RoomStatus.Occupied;
         await _db.SaveChangesAsync();
         return true;
     }
 
     public async Task<bool> CheckOutAsync(int id)
     {
-        var reservation = await _db.Reservations.FindAsync(id);
+        var reservation = await FindWithRoomAsync(id);
         if (reservation == null)
         {
             return false;
         }
+
         reservation.CheckOut();
+        reservation.Room!.Status = RoomStatus.PendingCleaning;
         await _db.SaveChangesAsync();
         return true;
     }
+
+    private Task<Reservation?> FindWithRoomAsync(int id)
+    {
+        // Room is a required navigation, so Include guarantees it is loaded.
+        return _db.Reservations
+            .Include(r => r.Room)
+            .FirstOrDefaultAsync(r => r.ReservationId == id);
+    }
+
+    private static string RoomStatusLabel(RoomStatus status) => status switch
+    {
+        RoomStatus.Available => "Livre",
+        RoomStatus.Occupied => "Ocupado",
+        RoomStatus.PendingCleaning => "Limpeza Pendente",
+        _ => status.ToString()
+    };
 
     public async Task<bool> CancelAsync(int id)
     {

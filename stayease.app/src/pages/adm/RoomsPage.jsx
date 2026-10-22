@@ -41,6 +41,7 @@ import {
   createRoom,
   deleteRoom,
   fetchRooms,
+  finishCleaning,
   updateRoom,
 } from "../../services/roomsService";
 import {
@@ -189,12 +190,7 @@ function Quartos() {
     const roomId = quarto.roomId ?? quarto.id;
 
     try {
-      await updateRoom(roomId, {
-        numero: quarto.numero,
-        tipo: quarto.tipo,
-        capacidade: quarto.capacidade,
-        status: "Livre",
-      });
+      await finishCleaning(roomId);
 
       setQuartos((atual) =>
         atual.map((item) =>

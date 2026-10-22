@@ -414,6 +414,7 @@ public class ReservationsControllerTests
             ScheduledCheckOut = DateTime.UtcNow.AddDays(2)
         };
 
+        db.Rooms.Add(new Room { RoomId = 1, Number = "101", Type = "Standard", Capacity = 2 });
         db.Reservations.Add(reservation);
         await db.SaveChangesAsync();
 
@@ -466,6 +467,7 @@ public class ReservationsControllerTests
             ActualCheckIn = DateTime.UtcNow
         };
 
+        db.Rooms.Add(new Room { RoomId = 1, Number = "101", Type = "Standard", Capacity = 2 });
         db.Reservations.Add(reservation);
         await db.SaveChangesAsync();
 
@@ -568,6 +570,7 @@ public class ReservationsControllerTests
             ScheduledCheckOut = DateTime.UtcNow.AddDays(2)
         };
 
+        db.Rooms.Add(new Room { RoomId = 1, Number = "101", Type = "Standard", Capacity = 2 });
         db.Reservations.Add(reservation);
         await db.SaveChangesAsync();
 
@@ -641,6 +644,7 @@ public class ReservationsControllerTests
             ActualCheckIn = DateTime.UtcNow
         };
 
+        db.Rooms.Add(new Room { RoomId = 1, Number = "101", Type = "Standard", Capacity = 2 });
         db.Reservations.Add(reservation);
         await db.SaveChangesAsync();
 

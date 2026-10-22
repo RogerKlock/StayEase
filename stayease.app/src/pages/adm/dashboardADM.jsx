@@ -1,4 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { BedDouble, Search, Sparkles } from "lucide-react";
 
 import { Button } from "../../components/ui/button";
@@ -10,7 +11,7 @@ import {
   checkOutReservation,
   fetchReservations,
 } from "../../services/reservationsService";
-import { fetchRooms, finishCleaning, updateRoom } from "../../services/roomsService";
+import { fetchRooms, finishCleaning } from "../../services/roomsService";
 import { getRoomDailyRate } from "../../services/roomDailyRatesStorage";
 
 function DashboardADM() {
@@ -80,10 +81,10 @@ function DashboardADM() {
 
   const concluirLimpeza = async (quarto) => {
     try {
-      await finishCleaning(quarto.roomId ?? quarto.id, quarto);
+      await finishCleaning(quarto.roomId ?? quarto.id);
       await carregarDados();
-    } catch {
-      // noop
+    } catch (error) {
+      toast.error(error.message || "Não foi possível concluir a limpeza.");
     }
   };
 
@@ -97,16 +98,11 @@ function DashboardADM() {
     if (!reserva) return;
 
     try {
+      // The API marks the room as Occupied in the same transaction.
       await checkInReservation(reserva.id);
-      await updateRoom(reserva.roomId, {
-        numero: quarto.numero,
-        tipo: quarto.tipo,
-        capacidade: quarto.capacidade,
-        status: "Ocupado",
-      });
       await carregarDados();
-    } catch {
-      // noop
+    } catch (error) {
+      toast.error(error.message || "Não foi possível realizar o check-in.");
     }
   };
 
@@ -120,16 +116,11 @@ function DashboardADM() {
     if (!reserva) return;
 
     try {
+      // The API marks the room as PendingCleaning in the same transaction.
       await checkOutReservation(reserva.id);
-      await updateRoom(reserva.roomId, {
-        numero: quarto.numero,
-        tipo: quarto.tipo,
-        capacidade: quarto.capacidade,
-        status: "Limpeza Pendente",
-      });
       await carregarDados();
-    } catch {
-      // noop
+    } catch (error) {
+      toast.error(error.message || "Não foi possível realizar o check-out.");
     }
   };
 

@@ -18,9 +18,11 @@ public interface IReservationService
 
     Task<Reservation> CreateAsync(CreateReservationDto dto);
 
+    /// <summary>Registers the check-in and marks the room as Occupied. The room must be Available.</summary>
     /// <returns>False when the reservation does not exist.</returns>
     Task<bool> CheckInAsync(int id);
 
+    /// <summary>Registers the check-out and marks the room as PendingCleaning for housekeeping.</summary>
     /// <returns>False when the reservation does not exist.</returns>
     Task<bool> CheckOutAsync(int id);
 

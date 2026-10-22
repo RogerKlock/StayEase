@@ -39,15 +39,8 @@ export async function fetchRoomReservations(roomId) {
     return Array.isArray(response.data) ? response.data : [];
 }
 
-export async function finishCleaning(roomId, room) {
-    const payload = {
-        number: String(room.numero ?? "").trim(),
-        type: String(room.tipo ?? "").trim(),
-        capacity: Number(room.capacidade ?? 0),
-        status: 0,
-    };
-
-    await api.put(`/rooms/${roomId}`, payload);
+export async function finishCleaning(roomId) {
+    await api.patch(`/rooms/${roomId}/finish-cleaning`);
 }
 
 export async function fetchRoomById(roomId) {
