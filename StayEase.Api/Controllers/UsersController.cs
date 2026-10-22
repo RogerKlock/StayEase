@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using StayEase.Api.Auth;
 using StayEase.Api.Dtos;
 using StayEase.Api.Services;
 
@@ -6,6 +8,7 @@ namespace StayEase.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(Roles = Roles.Administrator)]
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;

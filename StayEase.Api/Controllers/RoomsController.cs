@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using StayEase.Api.Auth;
 using StayEase.Api.Dtos;
 using StayEase.Api.Services;
 
@@ -22,12 +24,14 @@ public class RoomsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = Roles.Administrator)]
     public async Task<IActionResult> AddRoom(CreateRoomDto dto)
     {
         return Ok(await _roomService.CreateAsync(dto));
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = Roles.Administrator)]
     public async Task<IActionResult> UpdateRoom(int id, UpdateRoomDto dto)
     {
         var room = await _roomService.UpdateAsync(id, dto);
@@ -35,12 +39,14 @@ public class RoomsController : ControllerBase
     }
 
     [HttpPatch("{id}/finish-cleaning")]
+    [Authorize(Roles = Roles.Cleaning)]
     public async Task<IActionResult> FinishCleaning(int id)
     {
         return await _roomService.FinishCleaningAsync(id) ? NoContent() : NotFound();
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = Roles.Administrator)]
     public async Task<IActionResult> DeleteRoom(int id)
     {
         return await _roomService.DeleteAsync(id) ? NoContent() : NotFound();

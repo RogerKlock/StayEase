@@ -12,8 +12,14 @@ import {
   fetchReservations,
 } from "../../services/reservationsService";
 import { fetchRooms, finishCleaning } from "../../services/roomsService";
+import { CLEANING_ROLES, FRONT_DESK_ROLES } from "../../lib/authSession";
+import { useUser } from "../../lib/useUser";
 
 function DashboardADM() {
+  const { role } = useUser();
+  const podeLimpar = CLEANING_ROLES.includes(role);
+  const podeRecepcionar = FRONT_DESK_ROLES.includes(role);
+
   const [quartos, setQuartos] = useState([]);
   const [reservas, setReservas] = useState([]);
   const [filtro, setFiltro] = useState("Todos");
@@ -234,20 +240,20 @@ function DashboardADM() {
                 </div>
 
                 <div className="flex flex-wrap gap-2">
-                  {quarto.status === "Limpeza Pendente" && (
+                  {podeLimpar && quarto.status === "Limpeza Pendente" && (
                     <Button onClick={() => concluirLimpeza(quarto)} size="sm">
                       <Sparkles className="mr-1 h-4 w-4" />
                       Limpeza concluída
                     </Button>
                   )}
 
-                  {quarto.status === "Livre" && (
+                  {podeRecepcionar && quarto.status === "Livre" && (
                     <Button onClick={() => realizarCheckin(quarto)} variant="outline" size="sm">
                       Check-in
                     </Button>
                   )}
 
-                  {quarto.status === "Ocupado" && (
+                  {podeRecepcionar && quarto.status === "Ocupado" && (
                     <Button onClick={() => realizarCheckout(quarto)} variant="outline" size="sm">
                       Check-out
                     </Button>

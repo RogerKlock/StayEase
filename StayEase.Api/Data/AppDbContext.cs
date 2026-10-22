@@ -19,6 +19,11 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // The e-mail is the login, so it must identify a single user.
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+
         // Reservations are the hotel's history: deleting a room or a guest must never
         // silently wipe them, so the database rejects the delete instead of cascading.
         modelBuilder.Entity<Reservation>()

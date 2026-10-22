@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using StayEase.Api.Auth;
 using StayEase.Api.Dtos;
 using StayEase.Api.Services;
 
@@ -16,18 +18,21 @@ public class GuestsController : ControllerBase
     }
 
     [HttpGet]
+    [Authorize(Roles = Roles.FrontDeskAndGuest)]
     public async Task<IActionResult> GetGuests()
     {
         return Ok(await _guestService.GetAllAsync());
     }
 
     [HttpPost]
+    [Authorize(Roles = Roles.FrontDesk)]
     public async Task<IActionResult> AddGuest(CreateGuestDto dto)
     {
         return Ok(await _guestService.CreateAsync(dto));
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = Roles.FrontDesk)]
     public async Task<IActionResult> UpdateGuest(int id, UpdateGuestDto dto)
     {
         var guest = await _guestService.UpdateAsync(id, dto);
@@ -35,6 +40,7 @@ public class GuestsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = Roles.FrontDesk)]
     public async Task<IActionResult> DeleteGuest(int id)
     {
         return await _guestService.DeleteAsync(id)

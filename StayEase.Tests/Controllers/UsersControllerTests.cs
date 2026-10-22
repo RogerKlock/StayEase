@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using StayEase.Api.Controllers;
 using StayEase.Api.Dtos;
@@ -29,7 +30,7 @@ public class UsersControllerTests
 
         await db.SaveChangesAsync();
 
-        var controller = new UsersController(new UserService(db));
+        var controller = new UsersController(new UserService(db, new PasswordHasher<User>()));
 
         // Act
         var result = await controller.GetUsers();
@@ -47,7 +48,7 @@ public class UsersControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new UsersController(new UserService(db));
+        var controller = new UsersController(new UserService(db, new PasswordHasher<User>()));
 
         // Act
         var result = await controller.GetUsers();
@@ -65,11 +66,12 @@ public class UsersControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new UsersController(new UserService(db));
+        var controller = new UsersController(new UserService(db, new PasswordHasher<User>()));
 
         var dto = new CreateUserDto(
             "admin@stayease.com",
-            UserRole.Administrator
+            UserRole.Administrator,
+            "Senha@123"
         );
 
         // Act
@@ -91,11 +93,12 @@ public class UsersControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new UsersController(new UserService(db));
+        var controller = new UsersController(new UserService(db, new PasswordHasher<User>()));
 
         var dto = new CreateUserDto(
             "usuario@stayease.com",
-            UserRole.Receptionist
+            UserRole.Receptionist,
+            "Senha@123"
         );
 
         // Act
@@ -114,11 +117,12 @@ public class UsersControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new UsersController(new UserService(db));
+        var controller = new UsersController(new UserService(db, new PasswordHasher<User>()));
 
         var dto = new CreateUserDto(
             "recepcao@stayease.com",
-            UserRole.Receptionist
+            UserRole.Receptionist,
+            "Senha@123"
         );
 
         // Act
@@ -146,7 +150,7 @@ public class UsersControllerTests
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
-        var controller = new UsersController(new UserService(db));
+        var controller = new UsersController(new UserService(db, new PasswordHasher<User>()));
 
         var dto = new UpdateUserDto(
             UserRole.Administrator
@@ -177,7 +181,7 @@ public class UsersControllerTests
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
-        var controller = new UsersController(new UserService(db));
+        var controller = new UsersController(new UserService(db, new PasswordHasher<User>()));
 
         var dto = new UpdateUserDto(
             UserRole.Administrator
@@ -200,7 +204,7 @@ public class UsersControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new UsersController(new UserService(db));
+        var controller = new UsersController(new UserService(db, new PasswordHasher<User>()));
 
         var dto = new UpdateUserDto(
             UserRole.Administrator
@@ -230,7 +234,7 @@ public class UsersControllerTests
         db.Users.Add(user);
         await db.SaveChangesAsync();
 
-        var controller = new UsersController(new UserService(db));
+        var controller = new UsersController(new UserService(db, new PasswordHasher<User>()));
 
         // Act
         var result = await controller.DeleteUser(user.UserId);
@@ -248,7 +252,7 @@ public class UsersControllerTests
         // Arrange
         using var db = TestDbContextFactory.Create();
 
-        var controller = new UsersController(new UserService(db));
+        var controller = new UsersController(new UserService(db, new PasswordHasher<User>()));
 
         // Act
         var result = await controller.DeleteUser(999);
@@ -280,7 +284,7 @@ public class UsersControllerTests
         db.Users.AddRange(user1, user2);
         await db.SaveChangesAsync();
 
-        var controller = new UsersController(new UserService(db));
+        var controller = new UsersController(new UserService(db, new PasswordHasher<User>()));
 
         // Act
         await controller.DeleteUser(user1.UserId);

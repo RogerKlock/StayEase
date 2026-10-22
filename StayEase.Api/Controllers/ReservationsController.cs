@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using StayEase.Api.Auth;
 using StayEase.Api.Dtos;
 using StayEase.Api.Services;
 
@@ -28,24 +30,28 @@ public class ReservationsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = Roles.FrontDeskAndGuest)]
     public async Task<IActionResult> CreateReservation(CreateReservationDto dto)
     {
         return Ok(await _reservationService.CreateAsync(dto));
     }
 
     [HttpPatch("{id}/check-in")]
+    [Authorize(Roles = Roles.FrontDeskAndGuest)]
     public async Task<IActionResult> CheckIn(int id)
     {
         return await _reservationService.CheckInAsync(id) ? NoContent() : ReservationNotFound();
     }
 
     [HttpPatch("{id}/check-out")]
+    [Authorize(Roles = Roles.FrontDeskAndGuest)]
     public async Task<IActionResult> CheckOut(int id)
     {
         return await _reservationService.CheckOutAsync(id) ? NoContent() : ReservationNotFound();
     }
 
     [HttpPatch("{id}/cancel")]
+    [Authorize(Roles = Roles.FrontDeskAndGuest)]
     public async Task<IActionResult> Cancel(int id)
     {
         return await _reservationService.CancelAsync(id) ? NoContent() : ReservationNotFound();
