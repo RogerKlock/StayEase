@@ -20,77 +20,49 @@ public class UsersController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetUsers()
     {
-        try
-        {
-            var users = await _db.Users.AsNoTracking().ToListAsync();
-            return Ok(users);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+        var users = await _db.Users.AsNoTracking().ToListAsync();
+        return Ok(users);
     }
 
     [HttpPost]
     public async Task<IActionResult> AddUser(CreateUserDto dto)
     {
-        try
+        var user = new User
         {
-            var user = new User
-            {
-                Email = dto.Email,
-                Role = dto.Role
-            };
-            await _db.Users.AddAsync(user);
-            await _db.SaveChangesAsync();
-            return Ok(user);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+            Email = dto.Email,
+            Role = dto.Role
+        };
+        await _db.Users.AddAsync(user);
+        await _db.SaveChangesAsync();
+        return Ok(user);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateUser(int id, UpdateUserDto dto)
     {
-        try
+        var user = await _db.Users.FindAsync(id);
+        if (user == null)
         {
-            var user = await _db.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound(new { message = "User not found" });
-            }
+            return NotFound(new { message = "User not found" });
+        }
 
-            user.Role = dto.Role;
-            _db.Users.Update(user);
-            await _db.SaveChangesAsync();
-            return Ok(user);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+        user.Role = dto.Role;
+        _db.Users.Update(user);
+        await _db.SaveChangesAsync();
+        return Ok(user);
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteUser(int id)
     {
-        try
+        var user = await _db.Users.FindAsync(id);
+        if (user == null)
         {
-            var user = await _db.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound(new { message = "User not found" });
-            }
+            return NotFound(new { message = "User not found" });
+        }
 
-            _db.Users.Remove(user);
-            await _db.SaveChangesAsync();
-            return Ok(user);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+        _db.Users.Remove(user);
+        await _db.SaveChangesAsync();
+        return Ok(user);
     }
 }

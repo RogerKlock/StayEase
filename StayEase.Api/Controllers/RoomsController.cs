@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StayEase.Api.Data;
 using StayEase.Api.Dtos;
@@ -21,79 +20,51 @@ public class RoomsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetRooms()
     {
-        try
-        {
-            var rooms = await _db.Rooms.AsNoTracking().ToListAsync();
-            return Ok(rooms);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+        var rooms = await _db.Rooms.AsNoTracking().ToListAsync();
+        return Ok(rooms);
     }
 
     [HttpPost]
     public async Task<IActionResult> AddRoom(CreateRoomDto dto)
     {
-        try
+        var room = new Room
         {
-            var room = new Room
-            {
-                Number = dto.Number,
-                Type = dto.Type,
-                Capacity = dto.Capacity,
-                Status = RoomStatus.Available
-            };
-            await _db.Rooms.AddAsync(room);
-            await _db.SaveChangesAsync();
-            return Ok(room);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+            Number = dto.Number,
+            Type = dto.Type,
+            Capacity = dto.Capacity,
+            Status = RoomStatus.Available
+        };
+        await _db.Rooms.AddAsync(room);
+        await _db.SaveChangesAsync();
+        return Ok(room);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateRoom(int id, UpdateRoomDto dto)
     {
-        try
+        var room = await _db.Rooms.FindAsync(id);
+        if (room == null)
         {
-            Room room = await _db.Rooms.FindAsync(id);
-            if (room == null)
-            {
-                return NotFound();
-            }
-            room.Number = dto.Number;
-            room.Type = dto.Type;
-            room.Capacity = dto.Capacity;
-            room.Status = dto.Status;
-            await _db.SaveChangesAsync();
-            return NoContent();
+            return NotFound();
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+        room.Number = dto.Number;
+        room.Type = dto.Type;
+        room.Capacity = dto.Capacity;
+        room.Status = dto.Status;
+        await _db.SaveChangesAsync();
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteRoom(int id)
     {
-        try
+        var room = await _db.Rooms.FindAsync(id);
+        if (room == null)
         {
-            Room room = await _db.Rooms.FindAsync(id);
-            if (room == null)
-            {
-                return NotFound();
-            }
-            _db.Rooms.Remove(room);
-            await _db.SaveChangesAsync();
-            return NoContent();
+            return NotFound();
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+        _db.Rooms.Remove(room);
+        await _db.SaveChangesAsync();
+        return NoContent();
     }
 }

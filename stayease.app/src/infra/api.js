@@ -10,8 +10,11 @@ const api = axios.create({
 api.interceptors.response.use(
     (response) => response,
     (error) => {
+        const data = error?.response?.data;
         const message =
-            error?.response?.data?.message ||
+            data?.detail ||
+            data?.message ||
+            data?.title ||
             error?.message ||
             "Erro ao comunicar com a API.";
 

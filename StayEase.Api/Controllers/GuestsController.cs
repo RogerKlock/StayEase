@@ -20,78 +20,50 @@ public class GuestsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetGuests()
     {
-        try
-        {
-            var guests = await _db.Guests.AsNoTracking().ToListAsync();
-            return Ok(guests);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+        var guests = await _db.Guests.AsNoTracking().ToListAsync();
+        return Ok(guests);
     }
 
     [HttpPost]
     public async Task<IActionResult> AddGuest(CreateGuestDto dto)
     {
-        try
+        var guest = new Guest
         {
-            var guest = new Guest
-            {
-                Name = dto.Name,
-                Document = dto.Document,
-                Contact = dto.Contact
-            };
-            await _db.Guests.AddAsync(guest);
-            await _db.SaveChangesAsync();
-            return Ok(guest);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+            Name = dto.Name,
+            Document = dto.Document,
+            Contact = dto.Contact
+        };
+        await _db.Guests.AddAsync(guest);
+        await _db.SaveChangesAsync();
+        return Ok(guest);
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateGuest(int id, UpdateGuestDto dto)
     {
-        try
+        var guest = await _db.Guests.FindAsync(id);
+        if (guest == null)
         {
-            var guest = await _db.Guests.FindAsync(id);
-            if (guest == null)
-            {
-                return NotFound(new { message = "Guest not found" });
-            }
-            guest.Name = dto.Name;
-            guest.Document = dto.Document;
-            guest.Contact = dto.Contact;
-            _db.Guests.Update(guest);
-            await _db.SaveChangesAsync();
-            return NoContent();
+            return NotFound(new { message = "Guest not found" });
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+        guest.Name = dto.Name;
+        guest.Document = dto.Document;
+        guest.Contact = dto.Contact;
+        _db.Guests.Update(guest);
+        await _db.SaveChangesAsync();
+        return NoContent();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteGuest(int id)
     {
-        try
+        var guest = await _db.Guests.FindAsync(id);
+        if (guest == null)
         {
-            var guest = await _db.Guests.FindAsync(id);
-            if (guest == null)
-            {
-                return NotFound(new { message = "Guest not found" });
-            }
-            _db.Guests.Remove(guest);
-            await _db.SaveChangesAsync();
-            return NoContent();
+            return NotFound(new { message = "Guest not found" });
         }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+        _db.Guests.Remove(guest);
+        await _db.SaveChangesAsync();
+        return NoContent();
     }
 }

@@ -20,31 +20,17 @@ public class ReservationsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetActiveReservations()
     {
-        try
-        {
-            var reservations = await GetReservations()
-                .Where(r => !r.IsCancelled && r.ActualCheckOut == null)
-                .ToListAsync();
-            return Ok(reservations);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+        var reservations = await GetReservations()
+            .Where(r => !r.IsCancelled && r.ActualCheckOut == null)
+            .ToListAsync();
+        return Ok(reservations);
     }
 
     [HttpGet("all")]
     public async Task<IActionResult> GetAllReservations()
     {
-        try
-        {
-            var reservations = await GetReservations().ToListAsync();
-            return Ok(reservations);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+        var reservations = await GetReservations().ToListAsync();
+        return Ok(reservations);
     }
 
     private IQueryable<Reservation> GetReservations()
@@ -58,83 +44,55 @@ public class ReservationsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> CreateReservation(CreateReservationDto dto)
     {
-        try
+        var reservation = new Reservation
         {
-            var reservation = new Reservation
-            {
-                RoomId = dto.RoomId,
-                GuestId = dto.GuestId,
-                ScheduledCheckIn = dto.ScheduledCheckIn,
-                ScheduledCheckOut = dto.ScheduledCheckOut
-            };
-            await _db.Reservations.AddAsync(reservation);
-            await _db.SaveChangesAsync();
-            return Ok(reservation);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+            RoomId = dto.RoomId,
+            GuestId = dto.GuestId,
+            ScheduledCheckIn = dto.ScheduledCheckIn,
+            ScheduledCheckOut = dto.ScheduledCheckOut
+        };
+        await _db.Reservations.AddAsync(reservation);
+        await _db.SaveChangesAsync();
+        return Ok(reservation);
     }
 
     [HttpPatch("{id}/check-in")]
     public async Task<IActionResult> CheckIn(int id)
     {
-        try
-        {
-            var reservation = await GetReservationById(id);
-            if (reservation == null)
-                return NotFound(new { message = "Reservation not found" });
+        var reservation = await GetReservationById(id);
+        if (reservation == null)
+            return NotFound(new { message = "Reservation not found" });
 
-            reservation.CheckIn();
-            await _db.SaveChangesAsync();
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+        reservation.CheckIn();
+        await _db.SaveChangesAsync();
+        return NoContent();
     }
 
     [HttpPatch("{id}/check-out")]
     public async Task<IActionResult> CheckOut(int id)
     {
-        try
-        {
-            var reservation = await GetReservationById(id);
-            if (reservation == null)
-                return NotFound(new { message = "Reservation not found" });
+        var reservation = await GetReservationById(id);
+        if (reservation == null)
+            return NotFound(new { message = "Reservation not found" });
 
-            reservation.CheckOut();
-            await _db.SaveChangesAsync();
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+        reservation.CheckOut();
+        await _db.SaveChangesAsync();
+        return NoContent();
     }
 
     [HttpPatch("{id}/cancel")]
     public async Task<IActionResult> Cancel(int id)
     {
-        try
-        {
-            Reservation reservation = await GetReservationById(id);
-            if (reservation == null)
-                return NotFound(new { message = "Reservation not found" });
+        var reservation = await GetReservationById(id);
+        if (reservation == null)
+            return NotFound(new { message = "Reservation not found" });
 
-            reservation.Cancel();
-            await _db.SaveChangesAsync();
-            return NoContent();
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+        reservation.Cancel();
+        await _db.SaveChangesAsync();
+        return NoContent();
     }
 
-    private async Task<Reservation> GetReservationById(int id)
+    private async Task<Reservation?> GetReservationById(int id)
     {
         return await _db.Reservations.FindAsync(id);
     }
@@ -142,49 +100,28 @@ public class ReservationsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetReservation(int id)
     {
-        try
-        {
-            var reservation = await GetReservations()
-                .FirstOrDefaultAsync(r => r.ReservationId == id);
-            if (reservation == null)
-                return NotFound(new { message = "Reservation not found" });
-            return Ok(reservation);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+        var reservation = await GetReservations()
+            .FirstOrDefaultAsync(r => r.ReservationId == id);
+        if (reservation == null)
+            return NotFound(new { message = "Reservation not found" });
+        return Ok(reservation);
     }
 
     [HttpGet("guest/{guestId}")]
     public async Task<IActionResult> GetReservationsByGuest(int guestId)
     {
-        try
-        {
-            var reservations = await GetReservations()
-                .Where(r => r.GuestId == guestId)
-                .ToListAsync();
-            return Ok(reservations);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+        var reservations = await GetReservations()
+            .Where(r => r.GuestId == guestId)
+            .ToListAsync();
+        return Ok(reservations);
     }
 
     [HttpGet("room/{roomId}")]
     public async Task<IActionResult> GetReservationsByRoom(int roomId)
     {
-        try
-        {
-            var reservations = await GetReservations()
-                .Where(r => r.RoomId == roomId)
-                .ToListAsync();
-            return Ok(reservations);
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = ex.Message });
-        }
+        var reservations = await GetReservations()
+            .Where(r => r.RoomId == roomId)
+            .ToListAsync();
+        return Ok(reservations);
     }
 }
