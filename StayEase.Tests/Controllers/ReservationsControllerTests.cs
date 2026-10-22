@@ -136,6 +136,9 @@ public class ReservationsControllerTests
     {
         // Arrange
         using var db = TestDbContextFactory.Create();
+        db.Rooms.Add(new Room { RoomId = 1, Number = "101", Type = "Standard", Capacity = 2 });
+        db.Guests.Add(new Guest { GuestId = 1, Name = "João", Document = "111", Contact = "47999999999" });
+        await db.SaveChangesAsync();
 
         var controller = new ReservationsController(new ReservationService(db));
 
@@ -169,6 +172,9 @@ public class ReservationsControllerTests
     {
         // Arrange
         using var db = TestDbContextFactory.Create();
+        db.Rooms.Add(new Room { RoomId = 1, Number = "101", Type = "Standard", Capacity = 2 });
+        db.Guests.Add(new Guest { GuestId = 1, Name = "João", Document = "111", Contact = "47999999999" });
+        await db.SaveChangesAsync();
 
         var controller = new ReservationsController(new ReservationService(db));
 

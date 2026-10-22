@@ -1,4 +1,6 @@
+using System.Data;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using StayEase.Api.Data;
 using StayEase.Api.Dtos;
 using StayEase.Api.Exceptions;
@@ -52,6 +54,30 @@ public class ReservationService : IReservationService
 
     public async Task<Reservation> CreateAsync(CreateReservationDto dto)
     {
+        if (dto.ScheduledCheckOut <= dto.ScheduledCheckIn)
+        {
+            throw new BadRequestException("A data de saída deve ser posterior à data de entrada.");
+        }
+
+        // Serializable makes PostgreSQL abort one of two concurrent requests that both
+        // passed the overlap check for the same room, so overbooking cannot slip through.
+        await using var transaction = _db.Database.IsRelational()
+            ? await _db.Database.BeginTransactionAsync(IsolationLevel.Serializable)
+            : null;
+
+        if (!await _db.Rooms.AnyAsync(r => r.RoomId == dto.RoomId))
+        {
+            throw new BadRequestException($"Quarto {dto.RoomId} não encontrado.");
+        }
+        if (!await _db.Guests.AnyAsync(g => g.GuestId == dto.GuestId))
+        {
+            throw new BadRequestException($"Hóspede {dto.GuestId} não encontrado.");
+        }
+        if (await HasOverlappingReservationAsync(dto.RoomId, dto.ScheduledCheckIn, dto.ScheduledCheckOut))
+        {
+            throw new ConflictException("Já existe uma reserva para este quarto no período informado.");
+        }
+
         var reservation = new Reservation
         {
             RoomId = dto.RoomId,
@@ -60,8 +86,42 @@ public class ReservationService : IReservationService
             ScheduledCheckOut = dto.ScheduledCheckOut
         };
         await _db.Reservations.AddAsync(reservation);
-        await _db.SaveChangesAsync();
+
+        try
+        {
+            await _db.SaveChangesAsync();
+            if (transaction != null)
+            {
+                await transaction.CommitAsync();
+            }
+        }
+        catch (Exception ex) when (IsSerializationFailure(ex))
+        {
+            throw new ConflictException("Outra reserva para este quarto foi registrada ao mesmo tempo. Tente novamente.");
+        }
+
         return reservation;
+    }
+
+    /// <summary>
+    /// A reservation blocks the room from its scheduled check-in until its scheduled check-out,
+    /// unless it was cancelled or the guest already checked out. Periods are half-open, so a
+    /// new stay may start on the day the previous one ends.
+    /// </summary>
+    private Task<bool> HasOverlappingReservationAsync(int roomId, DateTime checkIn, DateTime checkOut)
+    {
+        return _db.Reservations.AnyAsync(r =>
+            r.RoomId == roomId &&
+            !r.IsCancelled &&
+            r.ActualCheckOut == null &&
+            r.ScheduledCheckIn < checkOut &&
+            checkIn < r.ScheduledCheckOut);
+    }
+
+    private static bool IsSerializationFailure(Exception ex)
+    {
+        return (ex as PostgresException ?? ex.InnerException as PostgresException)?.SqlState
+            == PostgresErrorCodes.SerializationFailure;
     }
 
     // Check-in and check-out update the reservation and the room status in the same

@@ -16,6 +16,8 @@ public interface IReservationService
 
     Task<List<Reservation>> GetByRoomAsync(int roomId);
 
+    /// <exception cref="Exceptions.BadRequestException">Invalid dates, room or guest.</exception>
+    /// <exception cref="Exceptions.ConflictException">The room is already booked in the period.</exception>
     Task<Reservation> CreateAsync(CreateReservationDto dto);
 
     /// <summary>Registers the check-in and marks the room as Occupied. The room must be Available.</summary>
