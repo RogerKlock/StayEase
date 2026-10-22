@@ -462,7 +462,8 @@ public class ReservationsControllerTests
             RoomId = 1,
             GuestId = 1,
             ScheduledCheckIn = DateTime.UtcNow,
-            ScheduledCheckOut = DateTime.UtcNow.AddDays(2)
+            ScheduledCheckOut = DateTime.UtcNow.AddDays(2),
+            ActualCheckIn = DateTime.UtcNow
         };
 
         db.Reservations.Add(reservation);
@@ -636,7 +637,8 @@ public class ReservationsControllerTests
             RoomId = 1,
             GuestId = 1,
             ScheduledCheckIn = DateTime.UtcNow,
-            ScheduledCheckOut = DateTime.UtcNow.AddDays(2)
+            ScheduledCheckOut = DateTime.UtcNow.AddDays(2),
+            ActualCheckIn = DateTime.UtcNow
         };
 
         db.Reservations.Add(reservation);
